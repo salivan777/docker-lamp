@@ -1,0 +1,20 @@
+FROM php:7
+
+# RUN выполняет идущую за ней команду в контексте нашего образа.
+# В данном случае мы установим некоторые зависимости и модули PHP.
+# Для установки модулей используем команду docker-php-ext-install.
+# На каждый RUN создается новый слой в образе, поэтому рекомендуется объединять команды.
+RUN apt-get update && apt-get install -y \
+        libzip-dev \
+        zip \
+	&& docker-php-ext-configure zip --with-libzip \
+	&& docker-php-ext-install zip \
+	&& docker-php-ext-install mysqli
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /var/www/html
+
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json /var/www/

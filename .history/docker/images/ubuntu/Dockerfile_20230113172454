@@ -1,0 +1,16 @@
+FROM ubuntu:20.04
+
+# RUN выполняет идущую за ней команду в контексте нашего образа.
+# В данном случае мы установим некоторые зависимости и модули PHP.
+# Для установки модулей используем команду docker-php-ext-install.
+# На каждый RUN создается новый слой в образе, поэтому рекомендуется объединять команды.
+RUN apt-get update && apt-get install -y \
+        libzip-dev \
+        zip \
+	&& docker-php-ext-configure zip --with-libzip \
+	&& docker-php-ext-install zip \
+	&& docker-php-ext-install mysqli
+
+WORKDIR /var/www/html
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
